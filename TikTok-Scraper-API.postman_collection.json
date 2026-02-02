@@ -1,0 +1,123 @@
+{
+  "info": {
+    "name": "TikTok Scraper API",
+    "description": "Collection para testar a API do TikTok Scraper",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "health"]
+        },
+        "description": "Verifica se a API está rodando"
+      }
+    },
+    {
+      "name": "Get User (sem vídeos)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/user/google",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "user", "google"]
+        },
+        "description": "Obtém dados de um usuário do TikTok sem incluir vídeos"
+      }
+    },
+    {
+      "name": "Get User (com vídeos)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/user/google?videos=true",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "user", "google"],
+          "query": [
+            {
+              "key": "videos",
+              "value": "true"
+            }
+          ]
+        },
+        "description": "Obtém dados de um usuário do TikTok incluindo vídeos"
+      }
+    },
+    {
+      "name": "Get Multiple Users (sem vídeos)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usernames\": [\"google\", \"facebook\", \"tiktok\"],\n  \"includeVideos\": false\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "users"]
+        },
+        "description": "Obtém dados de múltiplos usuários sem vídeos"
+      }
+    },
+    {
+      "name": "Get Multiple Users (com vídeos)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usernames\": [\"google\", \"tiktok\"],\n  \"includeVideos\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "users"]
+        },
+        "description": "Obtém dados de múltiplos usuários incluindo vídeos"
+      }
+    },
+    {
+      "name": "Root Endpoint",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": [""]
+        },
+        "description": "Obtém informações sobre a API e endpoints disponíveis"
+      }
+    }
+  ]
+}

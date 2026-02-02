@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+build
+.env
+.git
+.gitignore
+README.md
+EXAMPLES.md
+QUICKSTART.md
+test-api.js
+*.postman_collection.json
+.vscode
+.idea
+*.md
