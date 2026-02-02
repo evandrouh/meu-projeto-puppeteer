@@ -29,14 +29,22 @@ export class ScraperUtils {
       return config.chromePath;
     }
 
-    // Senão, procura nos caminhos padrão
+    // Caminho padrão do Chromium no Linux (Railway/Docker)
+    const linuxChromiumPath = '/usr/bin/chromium';
+    if (fs.existsSync(linuxChromiumPath)) {
+      console.log(`✅ Chromium encontrado em: ${linuxChromiumPath}`);
+      return linuxChromiumPath;
+    }
+
+    // Senão, procura nos caminhos padrão do Windows
     for (const chromePath of this.CHROME_PATHS) {
       if (chromePath && fs.existsSync(chromePath)) {
         console.log(`✅ Chrome encontrado em: ${chromePath}`);
         return chromePath;
       }
     }
-    console.log('⚠️  Chrome não encontrado. Usando Chromium padrão do Puppeteer.');
+
+    console.log('⚠️  Chrome/Chromium não encontrado. Usando Chromium padrão do Puppeteer.');
     return undefined;
   }
 
@@ -76,12 +84,14 @@ export class ScraperUtils {
       ignoreHTTPSErrors: true
     };
 
-    // Se encontrou o Chrome instalado, usa ele
+    // Se encontrou Chrome/Chromium, usa ele
     if (chromePath) {
       launchOptions.executablePath = chromePath;
-      console.log('🚀 Usando Google Chrome instalado + Stealth');
+      console.log(`🚀 Usando navegador em: ${chromePath}`);
     } else {
-      console.log('🚀 Usando Chromium do Puppeteer + Stealth');
+      // fallback para Linux
+      launchOptions.executablePath = '/usr/bin/chromium';
+      console.log('🚀 Usando Chromium instalado no container');
     }
 
     this.browser = await puppeteer.launch(launchOptions);
@@ -95,16 +105,9 @@ export class ScraperUtils {
     
     // O stealth plugin já faz a maioria das máscaras, mas vamos adicionar extras
     await page.evaluateOnNewDocument(() => {
-      // Randomizar alguns valores para parecer mais real
-      Object.defineProperty(navigator, 'hardwareConcurrency', {
-        get: () => 8,
-      });
+      Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+      Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
 
-      Object.defineProperty(navigator, 'deviceMemory', {
-        get: () => 8,
-      });
-
-      // Adicionar chrome runtime
       (window as any).chrome = {
         runtime: {},
         loadTimes: function() {},
@@ -113,19 +116,12 @@ export class ScraperUtils {
       };
     });
 
-    // Configurar user agent realista (Chrome recente)
     await page.setUserAgent(
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
     );
 
-    // Viewport realista
-    await page.setViewport({
-      width: 1920,
-      height: 1080,
-      deviceScaleFactor: 1,
-    });
+    await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 1 });
 
-    // Configurar cabeçalhos extras
     await page.setExtraHTTPHeaders({
       'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -138,7 +134,6 @@ export class ScraperUtils {
       'Sec-Fetch-User': '?1',
     });
 
-    // Carregar cookies se existirem
     await this.loadCookies(page);
 
     return page;
