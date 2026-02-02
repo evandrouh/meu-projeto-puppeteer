@@ -12,7 +12,39 @@ export class TikTokScraperService {
       
       // Criar uma nova página
       page = await ScraperUtils.createPage();
-      
+
+      // Navegar para o perfil
+      const url = `https://www.tiktok.com/@${username}`;
+      await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+
+      // Detector de captcha/challenge
+      const captchaElement = await page.$('div[data-e2e="captcha"], #captcha-verify-container, .captcha-container');
+      if (captchaElement) {
+        console.log("⚠️ Captcha detectado na página do TikTok");
+        return {
+          success: false,
+          username,
+          fullname: '',
+          is_verified: false,
+          avatar_url: null,
+          followings: 0,
+          followers: 0,
+          likes: 0,
+          bio: '',
+          external_url: null,
+          videos: [],
+          error: 'Captcha detectado. Scraping bloqueado.'
+        } as TikTokUserData;
+      }
+
+      // Simular scroll para carregar vídeos
+      if (includeVideos) {
+        for (let i = 0; i < 5; i++) {
+          await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+          await page.waitForTimeout(2000);
+        }
+      }
+
       // Criar instância do template de usuário
       const userTemplate = new UserTemplate(page);
       
