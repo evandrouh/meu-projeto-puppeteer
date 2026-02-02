@@ -41,7 +41,7 @@ export class TikTokScraperService {
       if (includeVideos) {
         for (let i = 0; i < 5; i++) {
           await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-          await page.waitForTimeout(2000);
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
 
