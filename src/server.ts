@@ -69,7 +69,8 @@ process.on('SIGTERM', async () => {
 });
 
 // Start server
-const PORT = config.port;
+const PORT = process.env.PORT || config.port || 3000;
+
 
 app.listen(PORT, () => {
   console.log('='.repeat(50));
